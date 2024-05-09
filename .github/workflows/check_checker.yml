@@ -34,3 +34,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo success
+  always_runs:
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo run
