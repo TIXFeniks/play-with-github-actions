@@ -1,17 +1,22 @@
 name: Github PR Audit
 
-on: 
-    pull_request:
-        paths:
-            - 'backend/**/*'
-    check_run:
-      types: [requested_action]
-    # requested_action:
-    #     identifier: heavy_task_requested
+on:
+  workflow_dispatch:
+    inputs:
+      workflow-input-1:
+        description: 'workflow-input-1'
+        required: true
+        default: ''
+      workflow-input-2:
+        description: 'workflow-input-2'
+        required: true
+        default: ''
+  pull_request:
+    paths: backend/**/*
 
 jobs:
       ## With actions
-  request_action:
+  initialize_checks:
     if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     permissions:
@@ -24,18 +29,25 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         name: Heavy Task
-        conclusion: action_required
-        action_url: https://example.com/action
-        # details_url: https://example.com/details
-        actions: |
-          [{"label":"Run action","description":"run expensive action manually","identifier":"heavy_task_requested"}]
+        conclusion: neutral
+        output: |
+          {"summary":"Backend tests weren't run"}
+        
   run_heavy_task:
-    if: ${{ github.event_name == 'check_run' && github.event.action.identifier == 'heavy_task_requested' }}
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: read
     steps:
-      - run: echo success
-  always_runs:
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo run
+    - uses: actions/checkout@v4
+    - run: echo success
+    - uses: LouisBrunner/checks-action@v2.0.0
+      if: always()
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        name: Heavy Task
+        conclusion: ${{ job.status }}
+        output: |
+          {"summary":"Backend tests status: ${{ job.status }}"}
