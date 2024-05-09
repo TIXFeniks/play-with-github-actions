@@ -29,7 +29,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         name: Heavy Task
-        conclusion: failed
+        conclusion: failure
         output: |
           {"summary":"Backend tests weren't run"}
         
