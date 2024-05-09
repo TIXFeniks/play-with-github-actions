@@ -1,0 +1,22 @@
+name: Github PR Audit
+
+on: 
+    pull_request:
+        paths:
+            - 'backend/**/*'
+
+jobs:
+      ## With actions
+  test_with_actions:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: ./
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        name: Heavy Task
+        conclusion: action_required
+        # action_url: https://example.com/action
+        # details_url: https://example.com/details
+        actions: |
+          [{"label":"Run action","description":"run expensive action manually","identifier":"heavy_task_requested"}]
