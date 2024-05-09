@@ -9,6 +9,9 @@ jobs:
       ## With actions
   test_with_actions:
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      contents: read
     steps:
     - uses: actions/checkout@v4
     - uses: LouisBrunner/checks-action@v2.0.0
