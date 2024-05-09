@@ -4,10 +4,15 @@ on:
     pull_request:
         paths:
             - 'backend/**/*'
+    check_run:
+      types: [requested_action]
+    # requested_action:
+    #     identifier: heavy_task_requested
 
 jobs:
       ## With actions
-  test_with_actions:
+  request_action:
+    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     permissions:
       checks: write
@@ -24,3 +29,8 @@ jobs:
         # details_url: https://example.com/details
         actions: |
           [{"label":"Run action","description":"run expensive action manually","identifier":"heavy_task_requested"}]
+  run_heavy_task:
+    if: ${{ github.event_name == 'check_run' && github.event.action.identifier == 'heavy_task_requested' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo success
